@@ -1,19 +1,25 @@
 import { useState } from 'react';
-import { PRODUCTOS } from './data/product'; // <-- Corregido a singular
-import './index.css'; // <-- Asegurate de que este sea el que tiene tus estilos de panadería
+import { PRODUCTOS } from './data/product';
+import './index.css';
+
 // Configuración de tu número de WhatsApp real (Gonzalo Daniel Aguilar)
-const NUMERO_WHATSAPP = "5492657611391";
+const NUMERO_WHATSAPP = "5492657611391"; 
+
+// 📈 CONFIGURACIÓN DE TU COMISIÓN (En porcentaje)
+// Si ponés 0, se vende al precio base de fábrica. 
+// Si ponés 10, le suma un 10% de ganancia automáticamente a todo el catálogo.
+const PORCENTAJE_COMISION = 25; 
 
 export default function App() {
-// Buscá esto arriba de todo en tu App.jsx y reemplazalo:
-const [pedido, setPedido] = useState({
-  pan: 0,
-  facturas: 0,
-  bizcochitos: 0,
-  rasquetas: 0,
-  corderito: 0, // <-- Cambiado de 'cremonas' a 'corderito' para que coincida con el ID
-  tostadas: 0
-});
+  // Estado para controlar las cantidades (Sin el pan común)
+  const [pedido, setPedido] = useState({
+    facturas: 0,
+    bizcochitos: 0,
+    rasquetas: 0,
+    corderito: 0,
+    tostadas: 0
+  });
+
   // Estado para los datos del formulario de entrega
   const [datosEnvio, setDatosEnvio] = useState({
     nombre: '',
@@ -21,7 +27,11 @@ const [pedido, setPedido] = useState({
     pago: 'Efectivo'
   });
 
-  // Manejadores para aumentar y disminuir cantidades
+  // Función interna para calcular el precio final de un producto con la comisión
+  const obtenerPrecioFinal = (precioBase) => {
+    return Math.round(precioBase * (1 + PORCENTAJE_COMISION / 100));
+  };
+
   const incrementar = (id) => {
     setPedido(prev => ({ ...prev, [id]: prev[id] + 1 }));
   };
@@ -30,20 +40,19 @@ const [pedido, setPedido] = useState({
     setPedido(prev => ({ ...prev, [id]: Math.max(0, prev[id] - 1) }));
   };
 
-  // Manejador para los cambios en los inputs del cliente
   const handleInputChange = (e) => {
     const { id, value } = e.target;
     setDatosEnvio(prev => ({ ...prev, [id]: value }));
   };
 
-  // Cálculo del total general en tiempo real
+  // Cálculo del total general usando el precio final con comisión
   const calcularTotal = () => {
     return PRODUCTOS.reduce((acumulado, prod) => {
-      return acumulado + (pedido[prod.id] * prod.precio);
+      const precioFinal = obtenerPrecioFinal(prod.precioBase);
+      return acumulado + (pedido[prod.id] * precioFinal);
     }, 0);
   };
 
-  // Procesamiento del formulario y redirección a WhatsApp
   const enviarPedido = (e) => {
     e.preventDefault();
     const total = calcularTotal();
@@ -53,7 +62,6 @@ const [pedido, setPedido] = useState({
       return;
     }
 
-    // Construcción del mensaje de texto formateado
     let mensaje = `🛒 *¡Nuevo Pedido de Preventa!*\n\n`;
     mensaje += `*Cliente:* ${datosEnvio.nombre}\n`;
     mensaje += `*Dirección:* ${datosEnvio.direccion}\n\n`;
@@ -62,7 +70,8 @@ const [pedido, setPedido] = useState({
     PRODUCTOS.forEach(prod => {
       const cantidad = pedido[prod.id];
       if (cantidad > 0) {
-        mensaje += `• ${cantidad}x ${prod.nombre} ($${(cantidad * prod.precio).toLocaleString('es-AR')})\n`;
+        const precioFinal = obtenerPrecioFinal(prod.precioBase);
+        mensaje += `• ${cantidad}x ${prod.nombre} ($${(cantidad * precioFinal).toLocaleString('es-AR')})\n`;
       }
     });
 
@@ -70,7 +79,6 @@ const [pedido, setPedido] = useState({
     mensaje += `*Método de Pago:* ${datosEnvio.pago}\n\n`;
     mensaje += `_Quedo a la espera de la confirmación del reparto para mañana._`;
 
-    // Generar link final de la API de WhatsApp
     const urlWhatsApp = `https://wa.me/${NUMERO_WHATSAPP}?text=${encodeURIComponent(mensaje)}`;
     window.open(urlWhatsApp, '_blank');
   };
@@ -79,27 +87,30 @@ const [pedido, setPedido] = useState({
     <>
       <header>
         <h1>🥖 Panadería Familiar</h1>
-        <p className="tagline">Hacé tu pedido hoy hasta las 20:00 hs y recibilo mañana fresco en tu puerta.</p>
+        <p className="tagline">Hacé tu pedido de cosas dulces hoy hasta las 20:00 hs y recibilo mañana fresco en tu puerta.</p>
       </header>
 
       <main className="container">
         {/* SECCIÓN CATÁLOGO */}
         <section className="catalogo">
-          <h2>Nuestro Catálogo</h2>
+          <h2>Especialidades Dulces y Saladas</h2>
           
-          {PRODUCTOS.map(producto => (
-            <div className="producto-card" key={producto.id}>
-              <div className="producto-info">
-                <h3>{producto.nombre}</h3>
-                <p className="precio">${producto.precio.toLocaleString('es-AR')} / {producto.unidad}</p>
+          {PRODUCTOS.map(producto => {
+            const precioFinal = obtenerPrecioFinal(producto.precioBase);
+            return (
+              <div className="producto-card" key={producto.id}>
+                <div className="producto-info">
+                  <h3>{producto.nombre}</h3>
+                  <p className="precio">${precioFinal.toLocaleString('es-AR')} / {producto.unidad}</p>
+                </div>
+                <div className="contador">
+                  <button type="button" className="btn-menos" onClick={() => decrementar(producto.id)}>-</button>
+                  <span className="cantidad">{pedido[producto.id]}</span>
+                  <button type="button" className="btn-mas" onClick={() => incrementar(producto.id)}>+</button>
+                </div>
               </div>
-              <div className="contador">
-                <button type="button" className="btn-menos" onClick={() => decrementar(producto.id)}>-</button>
-                <span className="cantidad">{pedido[producto.id]}</span>
-                <button type="button" className="btn-mas" onClick={() => incrementar(producto.id)}>+</button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </section>
 
         {/* SECCIÓN FORMULARIO */}
