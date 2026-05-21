@@ -6,18 +6,18 @@ export const PRODUCTOS = [
     unidad: "docena",
     precioBase: 8000,
   },
+  { id: "rasquetas", nombre: "Rasquetas", unidad: "unidad", precioBase: 700 },
+  { id: "corderito", nombre: "Corderito", unidad: "unidad", precioBase: 700 },
   {
-    id: "bizcochitos",
-    nombre: "Bizcochitos de Grasa",
+    id: "masas_finas",
+    nombre: "Masas Finas Surtidas",
     unidad: "medio kilo",
-    precioBase: 1500,
+    precioBase: 12000,
   },
-  { id: "rasquetas", nombre: "Rasquetas", unidad: "unidad", precioBase: 500 },
-  { id: "corderito", nombre: "Corderito", unidad: "unidad", precioBase: 1200 },
   {
-    id: "tostadas",
-    nombre: "Tostadas de Gluten",
-    unidad: "paquete",
-    precioBase: 1800,
-  },
+    id: "alfajores_maicena",
+    nombre: "Alfajores de Maicena",
+    unidad: "unidad",
+    precioBase: 600,
+  }, // <-- Actualizado a $600 la unidad
 ];

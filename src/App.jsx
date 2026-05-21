@@ -11,15 +11,13 @@ const NUMERO_WHATSAPP = "5492657611391";
 const PORCENTAJE_COMISION = 25; 
 
 export default function App() {
-  // Estado para controlar las cantidades (Sin el pan común)
-  const [pedido, setPedido] = useState({
-    facturas: 0,
-    bizcochitos: 0,
-    rasquetas: 0,
-    corderito: 0,
-    tostadas: 0
-  });
-
+const [pedido, setPedido] = useState({
+  facturas: 0,
+  rasquetas: 0,
+  corderito: 0,
+  masas_finas: 0,
+  alfajores_maicena: 0
+});
   // Estado para los datos del formulario de entrega
   const [datosEnvio, setDatosEnvio] = useState({
     nombre: '',
