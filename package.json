@@ -2,7 +2,7 @@
   "name": "panaderia-artesanal-familiar-dios-siempre-esta-con-nosotros",
   "private": true,
   "Author": "Gonzalo Daniel Aguilar",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
