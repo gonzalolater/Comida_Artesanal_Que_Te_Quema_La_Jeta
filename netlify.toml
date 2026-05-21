@@ -1,0 +1,11 @@
+[build]
+  # Comando que usa Vite para compilar React a archivos listos para producción
+  command = "npm run build"
+  # La carpeta que genera Vite con el código optimizado
+  publish = "dist"
+
+[[redirects]]
+  # Esto evita que la página tire error 404 si el cliente recarga la web desde el celu
+  from = "/*"
+  to = "/index.html"
+  status = 200
