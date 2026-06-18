@@ -1,28 +1,31 @@
 import { useState } from 'react';
 import { PRODUCTOS } from './data/product';
 import './index.css';
+import ProductList from './components/ProductList'
 
 // Configuración de tu número de WhatsApp real (Gonzalo Daniel Aguilar)
 const NUMERO_WHATSAPP = "5492657611391"; 
 
 // 📈 CONFIGURACIÓN DE TU COMISIÓN (En porcentaje)
-// Si ponés 0, se vende al precio base de fábrica. 
-// Si ponés 10, le suma un 10% de ganancia automáticamente a todo el catálogo.
-const PORCENTAJE_COMISION = 25; 
+// Si ponés 0, se vende al precio base de fábrica.
+// Se vende al precio base actual de los productos.
+const PORCENTAJE_COMISION = 0;
 
+// Datos de pago por Mercado Pago
+const MP_ALIAS = 'adapte.ancla.alfa.mp'
+const MP_CVU = '0000003100064510554811'
 export default function App() {
-const [pedido, setPedido] = useState({
-  facturas: 0,
-  rasquetas: 0,
-  corderito: 0,
-  masas_finas: 0,
-  alfajores_maicena: 0
-});
-  // Estado para los datos del formulario de entrega
+  const initialPedido = PRODUCTOS.reduce((acc, p) => {
+    acc[p.id] = 0;
+    return acc;
+  }, {});
+
+  const [pedido, setPedido] = useState(initialPedido);
+  // Estado para los datos del cliente
   const [datosEnvio, setDatosEnvio] = useState({
     nombre: '',
-    direccion: '',
-    pago: 'Efectivo'
+    telefono: '',
+    pago: 'Mercado Pago'
   });
 
   // Función interna para calcular el precio final de un producto con la comisión
@@ -60,9 +63,9 @@ const [pedido, setPedido] = useState({
       return;
     }
 
-    let mensaje = `🛒 *¡Nuevo Pedido de Preventa!*\n\n`;
+    let mensaje = `🛒 *¡Nuevo Pedido de Comida Artesanal!*\n\n`;
     mensaje += `*Cliente:* ${datosEnvio.nombre}\n`;
-    mensaje += `*Dirección:* ${datosEnvio.direccion}\n\n`;
+    mensaje += `*Teléfono:* ${datosEnvio.telefono}\n\n`;
     mensaje += `*Detalle del Pedido:*\n`;
 
     PRODUCTOS.forEach(prod => {
@@ -75,8 +78,11 @@ const [pedido, setPedido] = useState({
 
     mensaje += `\n*Total a Abonar:* $${total.toLocaleString('es-AR')}\n`;
     mensaje += `*Método de Pago:* ${datosEnvio.pago}\n\n`;
-    mensaje += `_Quedo a la espera de la confirmación del reparto para mañana._`;
-
+      mensaje += `*Instrucciones de Pago (Mercado Pago):*\n`;
+      mensaje += `• Alias: ${MP_ALIAS}\n`;
+      mensaje += `• CVU: ${MP_CVU}\n\n`;
+    mensaje += `*ATENCIÓN:* Si la orden no está acompañada por el comprobante de transferencia, no será tomada en cuenta.\n\n`;
+    mensaje += `_Por favor, enviá el comprobante de pago al mismo número o adjuntalo en la conversación de WhatsApp._\n\n`;
     const urlWhatsApp = `https://wa.me/${NUMERO_WHATSAPP}?text=${encodeURIComponent(mensaje)}`;
     window.open(urlWhatsApp, '_blank');
   };
@@ -84,8 +90,8 @@ const [pedido, setPedido] = useState({
   return (
     <>
       <header>
-        <h1>🥖 Panadería Familiar</h1>
-        <p className="tagline">Hacé tu pedido de cosas dulces hoy hasta las 20:00 hs y recibilo mañana fresco en tu puerta.</p>
+        <h1>🍔 Comida Casera Artesanal</h1>
+        <p className="tagline">Pedí hamburguesas artesanales para llevar — frescas y hechas en casa.</p>
       </header>
 
       <main className="container">
@@ -93,22 +99,12 @@ const [pedido, setPedido] = useState({
         <section className="catalogo">
           <h2>Especialidades Dulces y Saladas</h2>
           
-          {PRODUCTOS.map(producto => {
-            const precioFinal = obtenerPrecioFinal(producto.precioBase);
-            return (
-              <div className="producto-card" key={producto.id}>
-                <div className="producto-info">
-                  <h3>{producto.nombre}</h3>
-                  <p className="precio">${precioFinal.toLocaleString('es-AR')} / {producto.unidad}</p>
-                </div>
-                <div className="contador">
-                  <button type="button" className="btn-menos" onClick={() => decrementar(producto.id)}>-</button>
-                  <span className="cantidad">{pedido[producto.id]}</span>
-                  <button type="button" className="btn-mas" onClick={() => incrementar(producto.id)}>+</button>
-                </div>
-              </div>
-            );
-          })}
+          <ProductList
+            productos={PRODUCTOS.map(p => ({ ...p, precioBase: obtenerPrecioFinal(p.precioBase) }))}
+            pedido={pedido}
+            onIncrement={incrementar}
+            onDecrement={decrementar}
+          />
         </section>
 
         {/* SECCIÓN FORMULARIO */}
@@ -128,13 +124,13 @@ const [pedido, setPedido] = useState({
             </div>
             
             <div className="input-group">
-              <label htmlFor="direccion">Dirección / Barrio</label>
+              <label htmlFor="telefono">Número de Cliente</label>
               <input 
                 type="text" 
-                id="direccion" 
+                id="telefono" 
                 required 
-                placeholder="Ej: Calle Falsa 123" 
-                value={datosEnvio.direccion}
+                placeholder="Ej: 11 2345 6789" 
+                value={datosEnvio.telefono}
                 onChange={handleInputChange}
               />
             </div>
@@ -142,14 +138,21 @@ const [pedido, setPedido] = useState({
             <div className="input-group">
               <label htmlFor="pago">Método de Pago</label>
               <select id="pago" value={datosEnvio.pago} onChange={handleInputChange} required>
-                <option value="Efectivo">Efectivo</option>
-                <option value="Transferencia">Transferencia / Mercado Pago</option>
+                <option value="Mercado Pago">Mercado Pago</option>
+                <option value="Transferencia bancaria">Transferencia bancaria</option>
               </select>
             </div>
 
             <div className="resumen-total">
               <span>Total a abonar:</span>
               <strong>${calcularTotal().toLocaleString('es-AR')}</strong>
+            </div>
+
+            <div className="pago-aviso">
+              <p><strong>Pago por Mercado Pago</strong></p>
+              <p>Alias: <strong>{MP_ALIAS}</strong></p>
+              <p>CVU: <strong>{MP_CVU}</strong></p>
+              <p className="pago-importante">Si la orden no está acompañada por el comprobante de transferencia, no será tomada en cuenta.</p>
             </div>
 
             <button type="submit" className="btn-enviar">

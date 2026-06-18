@@ -156,3 +156,31 @@ h2 {
     cursor: pointer;
     box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
 }
+
+.pago-aviso {
+    background: #fff4e5;
+    border: 1px solid #ffbb33;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 18px;
+    color: #4a2a00;
+}
+
+.pago-aviso p {
+    margin: 6px 0;
+    font-size: 0.95rem;
+}
+
+.pago-importante {
+    color: #b02a16;
+    font-weight: 700;
+}
+
+.producto-img {
+    width: 72px;
+    height: 56px;
+    object-fit: contain;
+    margin-right: 12px;
+    border-radius: 8px;
+    background: #fff;
+}

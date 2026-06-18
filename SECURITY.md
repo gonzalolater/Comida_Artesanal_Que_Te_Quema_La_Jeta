@@ -1,6 +1,6 @@
-# 🔒 Política de Seguridad - Panadería Familiar
+# 🔒 Política de Seguridad - Comida Artesanal
 
-Este documento detalla las medidas de seguridad, el tratamiento de datos de los usuarios y los protocolos de mitigación de riesgos implementados en la aplicación de preventa activa.
+Este documento detalla las medidas de seguridad, el tratamiento de datos de los usuarios y los protocolos de mitigación de riesgos implementados en la aplicación de comida artesanal.
 
 ---
 
