@@ -171,6 +171,28 @@ h2 {
     font-size: 0.95rem;
 }
 
+.dato-copiable {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin: 6px 0;
+}
+
+.btn-copiar {
+    background-color: transparent;
+    border: 1px solid #4a2a00;
+    color: #4a2a00;
+    padding: 6px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.btn-copiar:hover {
+    background-color: rgba(74, 42, 0, 0.08);
+}
+
 .pago-importante {
     color: #b02a16;
     font-weight: 700;

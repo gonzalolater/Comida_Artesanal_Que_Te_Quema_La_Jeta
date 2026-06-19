@@ -46,6 +46,15 @@ export default function App() {
     setDatosEnvio(prev => ({ ...prev, [id]: value }));
   };
 
+  const copiarTexto = async (texto, etiqueta) => {
+    try {
+      await navigator.clipboard.writeText(texto);
+      alert(`${etiqueta} copiado al portapapeles`);
+    } catch (error) {
+      alert(`No se pudo copiar ${etiqueta}. Intenta manualmente.`);
+    }
+  };
+
   // Cálculo del total general usando el precio final con comisión
   const calcularTotal = () => {
     return PRODUCTOS.reduce((acumulado, prod) => {
@@ -129,7 +138,7 @@ export default function App() {
                 type="text" 
                 id="telefono" 
                 required 
-                placeholder="Ej: 11 2345 6789" 
+                placeholder="0000" 
                 value={datosEnvio.telefono}
                 onChange={handleInputChange}
               />
@@ -150,8 +159,18 @@ export default function App() {
 
             <div className="pago-aviso">
               <p><strong>Pago por Mercado Pago</strong></p>
-              <p>Alias: <strong>{MP_ALIAS}</strong></p>
-              <p>CVU: <strong>{MP_CVU}</strong></p>
+              <div className="dato-copiable">
+                <span>Alias: <strong>{MP_ALIAS}</strong></span>
+                <button type="button" className="btn-copiar" onClick={() => copiarTexto(MP_ALIAS, 'Alias')}>
+                  Copiar
+                </button>
+              </div>
+              <div className="dato-copiable">
+                <span>CVU: <strong>{MP_CVU}</strong></span>
+                <button type="button" className="btn-copiar" onClick={() => copiarTexto(MP_CVU, 'CVU')}>
+                  Copiar
+                </button>
+              </div>
               <p className="pago-importante">Si la orden no está acompañada por el comprobante de transferencia, no será tomada en cuenta.</p>
             </div>
 
