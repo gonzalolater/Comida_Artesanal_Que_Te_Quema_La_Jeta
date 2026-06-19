@@ -171,6 +171,9 @@ export default function App() {
                   Copiar
                 </button>
               </div>
+              <div className="dato-copiable">
+                <span>Nombre de referencia: <strong>Gonzalo Daniel Aguilar</strong></span>
+              </div>
               <p className="pago-importante">Si la orden no está acompañada por el comprobante de transferencia, no será tomada en cuenta.</p>
             </div>
 
